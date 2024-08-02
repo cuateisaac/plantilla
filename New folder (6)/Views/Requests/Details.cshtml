@@ -1,0 +1,313 @@
+﻿@model HorasExtra.Models.Request
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.3.4/signature_pad.js" integrity="sha512-j36pYCzm3upwGd6JGq6xpdthtxcUtSf5yQJSsgnqjAsXtFT84WH8NQy9vqkv4qTV9hK782TwuHUTSwo2hRF+/A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.3.4/signature_pad.min.js" integrity="sha512-Mtr2f9aMp/TVEdDWcRlcREy9NfgsvXvApdxrm3/gK8lAMWnXrFsYaoW01B5eJhrUpBT7hmIjLeaQe0hnL7Oh1w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+@*<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>*@
+<script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
+<style>
+    canvas {
+        display: block;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <h1>Agregar empleados</h1>
+    </div>
+    <div class="row">
+        <div class="card" style="width: 100%;">
+            <div class="card-body">
+                <div class="row row-cols-12">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="ID_Request">Numero de solicitud</label>
+                            <input id="LblId" type="text" class="form-control input-full" value="@Html.DisplayFor(model => model.ID_request)" />
+                        </div>
+                        <div class="form-group">
+                            <label for="ID_Request">Operacion</label>
+                            <input id="ID_operation" type="text" class="form-control input-full" value="@Html.DisplayFor(model => model.Operation)" />
+                        </div>
+                        <div class="form-group">
+                            <label for="ID_Request">Departamento</label>
+                            <input id="ID_Request" type="text" class="form-control input-full" value="@Html.DisplayFor(model => model.Department)" />
+                        </div>
+                        <div class="form-group">
+                            <label for="ID_Request">Fecha</label>
+                            <input id="ID_Request" type="text" class="form-control input-full" value="@Html.DisplayFor(model => model.CreatedDate)" />
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <h5 class="card-title">Firma de gerente</h5>
+                            <img width="300" height="100" src="@Html.DisplayFor(model => model.ManagerSignature)" class="card-img-bottom" alt="...">
+                        </div>
+                        <div class="form-group">
+                            <h5 class="card-title">Firma de Supervisor</h5>
+                            <img width="300" height="100" src="@Html.DisplayFor(model => model.ManagerSignature)" class="card-img-bottom" alt="...">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div>
+                            <label>Codigo QR</label>
+                            <div id="qrcode"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <input id="BtnOpenEmpModal" type="submit" class="btn btn-secondary" value="Agregar Empleado" />
+    </div>
+
+    <div class="row">
+        <div class="table table-responsive">
+            <table class="table-striped" id="TableEmp">
+                <thead>
+                    <tr>
+                        <th scope="col">
+                            Numero de empleado
+                        </th>
+                        <th scope="col">
+                            Nombr de empleado
+                        </th>
+                        <th scope="col">
+                            Cantidad de horas
+                        </th>
+                        <th scope="col">
+                            Firma
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Employees)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.EmpNum)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.QtyHrs)
+                            </td>
+                            <td>
+                                <img width="250" height="75" src="@Html.DisplayFor(modelItem => item.Signature)" />
+                            </td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
+                                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+@*<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header" style="background-color: #2a2f5b;">
+                    <h5 class="modal-title" style="color:whitesmoke;" id="staticBackdropLabel"></h5>
+                    <a href="#" id="CloseModalAddEmp" style="color:whitesmoke; background-color:transparent;">&times;</a>
+                </div>
+
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="control-label">Employee Number</label>
+                        <input id="EmpNum" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Name</label>
+                        <input id="txtName" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Hours Quantity</label>
+                        <input id="txtHrsQty" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Signature</label>
+                        <div class="card">
+                            <div id="signature-pad" class="signature-pad">
+                                <div class="signature-pad--body">
+                                    <canvas id="ImgEmployeeSignature"></canvas>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="signature-pad--footer">
+                            <div class="signature-pad--actions">
+                                <div>
+                                    <button id="BtnClearSignature" type="button" class="button clear" data-action="clear">Clear</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="modal-footer" style="background-color: #2a2f5b;">
+                    <button id="BtnSaveEmployee" type="button" class="btn btn-light">Guardar</button>
+                </div>
+
+            </div>
+        </div>
+    </div>*@
+
+
+
+<div class="modal fade" id="ModalAddEmployee" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #2a2f5b;">
+                <h5 class="modal-title" id="staticBackdropLabel" style="color:whitesmoke;">Registrar empleado</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span style="color:whitesmoke;" aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="control-label">Employee Number</label>
+                    <input id="EmpNum" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Name</label>
+                    <input id="txtName" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Hours Quantity</label>
+                    <input id="txtHrsQty" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Signature</label>
+                    <div id="signature-pad" class="signature-pad">
+                        <div class="signature-pad--body shadow-lg p-3 mb-5 bg-white rounded">
+                            <canvas id="ImgEmployeeSignature" style="width: 100%;" class="rounded"></canvas>
+                        </div>
+                    </div>
+                    <div class="signature-pad--footer">
+                        <div class="signature-pad--actions">
+                            <div>
+                                <button id="BtnClearSignature" type="button" class="button clear" data-action="clear">Clear</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="background-color: #2a2f5b;">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button id="BtnSaveEmployee" class="btn btn-success">Guardar</button>
+            </div>
+        </div>
+    </div>
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.ID_request">Edit</a> |
+        <a asp-action="Index">Back to List</a>
+    </div>
+</div>
+<script>
+
+    $(document).ready(function () {
+
+        $("#EmpNum").on("focusout", function () {
+
+            $.get('@Url.Action("GetEmployeeData", "Employees")', { EmpNum: $("#EmpNum").val(), }, function (AddR) {
+                var result = JSON.parse(AddR);
+
+                $("#txtName").val(result[0].Name);
+            });
+
+        });
+
+
+        $("#BtnOpenEmpModal").click(function () {
+
+            $("#ModalAddEmployee").modal({ backdrop: 'static', keyboard: false }, "show");
+        });
+        SignatureDesing();
+        $("#BtnSaveEmployee").click(function (e) {
+
+            var canvas1 = document.getElementById('ImgEmployeeSignature');
+            var SignatureBase64 = canvas1.toDataURL('image/png');
+
+            var data = {
+                EmpNum: $("#EmpNum").val(),
+                Name: $("#txtName").val(),
+                QtyHrs: $("#txtHrsQty").val(),
+                Signature: SignatureBase64,
+                RequestID: $("#LblId").val()
+            };
+
+            $.post('@Url.Action("Create", "Employees")', { employees: data, }, function (AddR) {
+                alert("Guardado");
+            });
+
+        });
+
+
+        //Guardar Firma
+        var divfirma1 = "signature-pad";
+        var wrapper1 = document.getElementById(divfirma1);
+        var canvas = wrapper1.querySelector("canvas");
+        var signaturePad = new SignaturePad(canvas, {
+            backgroundColor: 'rgb(255, 255, 255)'
+        });
+
+        $("#BtnClearSignature").click(function () {
+            signaturePad.clear();
+        });
+        //Guardar Firma
+
+        //Crear QR
+        var table = document.getElementById("TableEmp");
+        var tbodyRowCount = table.tBodies[0].rows.length;
+        const qrcode = new QRCode(document.getElementById('qrcode'), {
+            text: (
+                "IDREQ:" + $("#LblId").val() +
+                "Operation:" + $("#Operation").text().trim() +
+                "CreatedAt:" + $("#Date").text().trim() +
+                "EmpQty:" + tbodyRowCount),
+            width: 128,
+            height: 128,
+            colorDark: '#000',
+            colorLight: '#fff',
+            correctLevel: QRCode.CorrectLevel.H
+        });
+        //Crear QR
+
+        function SignatureDesing() {
+            const canvas = document.getElementById('ImgEmployeeSignature');
+            const context = canvas.getContext('2d');
+            window.addEventListener('resize', resizeCanvas, false);
+            function resizeCanvas() {
+                //canvas.width = window.innerWidth;
+                //canvas.height = window.innerHeight;
+                canvas.width = 740;
+                canvas.height = 150;
+
+                drawStuff();
+            }
+
+            resizeCanvas();
+
+            function drawStuff() {
+            }
+        }
+    });
+
+</script>

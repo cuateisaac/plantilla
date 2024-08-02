@@ -1,0 +1,69 @@
+﻿@model IEnumerable<HorasExtra.Models.Request>
+
+@{
+    ViewData["Title"] = "Solicitudes de tiempo extra";
+}
+
+<div class="container-fluid"> 
+    <div class="row">
+        <h1>Solicitudes de tiempo extra</h1>
+    </div>
+    <div class="row">
+        <div class="card-body">
+            <a asp-action="Create" class="btn btn-secondary">
+                <span class="btn-label">
+                    <i class="fa fa-plus"></i>
+                </span>
+                Crear nueva solicitud
+            </a>
+            <div class="table-responsive">
+                <table id="basic-datatables" class="display table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Operation)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Department)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.CreatedDate)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.WorkSchedule)
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Operation)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Department)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.CreatedDate)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.WorkSchedule)
+                                </td>
+                                <td>
+                                    <a asp-action="Details" asp-route-id="@item.ID_request" class="btn btn-info">Agregar empleado</a> |
+                                    <a asp-action="Edit" asp-route-id="@item.ID_request" class="btn btn-primary">Edit</a> |
+                                    <a asp-action="Delete" asp-route-id="@item.ID_request" class="btn btn-danger">Delete</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<br />

@@ -1,0 +1,232 @@
+﻿@model HorasExtra.Models.Request
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.3.4/signature_pad.js" integrity="sha512-j36pYCzm3upwGd6JGq6xpdthtxcUtSf5yQJSsgnqjAsXtFT84WH8NQy9vqkv4qTV9hK782TwuHUTSwo2hRF+/A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.3.4/signature_pad.min.js" integrity="sha512-Mtr2f9aMp/TVEdDWcRlcREy9NfgsvXvApdxrm3/gK8lAMWnXrFsYaoW01B5eJhrUpBT7hmIjLeaQe0hnL7Oh1w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+
+<h1>Create</h1>
+
+<h4>Request</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <div class="form-group">
+            <label asp-for="Operation" class="control-label"></label>
+            <input id="DDOperation" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="Department" class="control-label"></label>
+            <input id="txtDepartment" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="WorkSchedule" class="control-label"></label>
+            <input id="txtSchedule" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="ManagerSignature" class="control-label"></label>
+            <div id="signature-pad" class="signature-pad">
+                <div class="signature-pad--body">
+                    <canvas id="ImgManagerSignature"></canvas>
+                </div>
+                <div class="signature-pad--footer">
+                    <div class="signature-pad--actions">
+                        <div>
+                            <button type="button" class="button clear" data-action="clear">Clear</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <span asp-validation-for="ManagerSignature" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="SupervisorSignature" class="control-label"></label>
+            <div id="signature-pad2" class="signature-pad">
+                <div class="signature-pad--body">
+                    <canvas id="ImgSupervisorSignature"></canvas>
+                </div>
+                <div class="signature-pad--footer">
+                    <div class="signature-pad--actions">
+                        <div>
+                            <button type="button" class="button clear" data-action="clear">Clear</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <input id="submitButton" type="submit" class="btn btn-primary" />
+        </div>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+<script>
+
+    $(document).ready(function () {
+
+        $("#submitButton").click(function (e) {
+
+            var canvas1 = document.getElementById('ImgSupervisorSignature');
+            var SupervisorSignatureBase64 = canvas1.toDataURL('image/png')
+
+            var canvas2 = document.getElementById('ImgManagerSignature');
+            var ManagerSignatureBase64 = canvas2.toDataURL('image/png')
+
+            var data = {
+                Operation: $("#DDOperation").val(),
+                Department: $("#txtDepartment").val(),
+                WorkSchedule: $("#txtSchedule").val(),
+                ManagerSignature: ManagerSignatureBase64,
+                SupervisorSignature: SupervisorSignatureBase64
+            }
+            $.post('@Url.Action("Create", "Requests")', { request: data, }, function (AddR) {
+                
+            });
+
+            //$.ajax({
+            //    type: "POST",
+            //    url: "Requests/Create",
+            //    contentType: "application/json; charset=utf-8",
+            //    dataType: "json",
+            //    data: JSON.stringify({
+            //        Operation: $("#DDOperation").val(),
+            //        Department: $("#txtDepartement").val(),
+            //        WorkSchedule: $("#txtSchedule").val(),
+            //        ManagerSignature: ManagerSignatureBase64,
+            //        SupervisorSignature: SupervisorSignatureBase64,
+            //    }),
+            //    success: function (result, status, xhr) {
+            //        alert('Guardado');
+            //    },
+            //    error: function (jqXHR, exception) {
+            //        var msg = '';
+            //        if (jqXHR.status === 0) {
+            //            msg = 'Not connect.\n Verify Network.';
+            //        } else if (jqXHR.status == 404) {
+            //            msg = 'Requested page not found. [404]';
+            //        } else if (jqXHR.status == 500) {
+            //            msg = 'Internal Server Error [500].';
+            //        } else if (exception === 'parsererror') {
+            //            msg = 'Requested JSON parse failed.';
+            //        } else if (exception === 'timeout') {
+            //            msg = 'Time out error.';
+            //        } else if (exception === 'abort') {
+            //            msg = 'Ajax request aborted.';
+            //        } else {
+            //            msg = 'Uncaught Error.\n' + jqXHR.responseText;
+            //        }
+            //        console.log(msg);
+            //    }
+            //});
+        });
+
+        var divfirma1 = "signature-pad";
+        var divfirma2 = "signature-pad2";
+
+        var wrapper1 = document.getElementById(divfirma1);
+        var clearButton = wrapper1.querySelector("[data-action=clear]")
+        var canvas = wrapper1.querySelector("canvas");
+        var signaturePad = new SignaturePad(canvas, {
+            backgroundColor: 'rgb(255, 255, 255)'
+        });
+
+        clearButton.addEventListener("click", function (event) {
+            signaturePad.clear();
+        });
+
+
+        var wrapper2 = document.getElementById(divfirma2);
+        var clearButton2 = wrapper2.querySelector("[data-action=clear]")
+        var canvas = wrapper2.querySelector("canvas");
+        var signaturePad2 = new SignaturePad(canvas, {
+            backgroundColor: 'rgb(255, 255, 255)'
+        });
+
+        clearButton2.addEventListener("click", function (event) {
+            signaturePad2.clear();
+        });
+
+
+        //function resizeCanvas() {
+        //    var ratio = Math.max(window.devicePixelRatio || 1, 1);
+        //    canvas.width = canvas.offsetWidth * ratio;
+        //    canvas.height = canvas.offsetHeight * ratio;
+        //    canvas.getContext("2d").scale(ratio, ratio);
+        //    signaturePad.clear();
+        //    signaturePad2.clear();
+        //}
+
+        //window.onresize = resizeCanvas;
+        //resizeCanvas();
+
+
+
+        //function Validate() {
+        //    var errorCounter = 0;
+        //    $(".nameSpan").text("");
+        //    $(".ageSpan").text("");
+        //    $(".standardSpan").text("");
+        //    $(".percentSpan").text("");
+        //    $(".statusSpan").text("");
+
+        //    if ($("#name").val() == "") {
+        //        $(".nameSpan").text("Please enter name");
+        //        errorCounter++;
+        //    }
+
+        //    if ($("#age").val() == "") {
+        //        $(".ageSpan").text("Please enter age");
+        //        errorCounter++;
+        //    }
+        //    else if (!(isPositiveInteger($("#age").val()))) {
+        //        $(".ageSpan").text("Age should be in +ve integers");
+        //        errorCounter++;
+        //    }
+
+        //    if ($("#standard").val() == "") {
+        //        $(".standardSpan").text("Please enter standard");
+        //        errorCounter++;
+        //    }
+
+        //    if ($("#percent").val() == "") {
+        //        $(".percentSpan").text("Please enter percent");
+        //        errorCounter++;
+        //    }
+        //    else if (!(isPercent($("#percent").val()))) {
+        //        $(".percentSpan").text("Percent should be integers or decimal");
+        //        errorCounter++;
+        //    }
+
+        //    if ($("#status").val() == "Select") {
+        //        $(".statusSpan").text("Please select status");
+        //        errorCounter++;
+        //    }
+
+        //    if (errorCounter == 0) {
+        //        return true;
+        //    }
+        //    else {
+        //        return false;
+        //    }
+        //}
+
+        //function isPositiveInteger(n) {
+        //    return ($.isNumeric(n) && (n > 0));
+        //}
+
+        //function isPercent(n) {
+        //    return (n.match(/(^100(\.0{1,2})?$)|(^([1-9]([0-9])?|0)(\.[0-9]{1,2})?$)/));
+        //}
+    });
+</script>
